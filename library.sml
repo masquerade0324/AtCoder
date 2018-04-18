@@ -1,4 +1,4 @@
-(* Competitive Programmming Library in SML
+(* Competitive Programming Library in SML
  * @author : masquerade0324 *)
 
 (* 2 <= p <= n を満たす素数 p からなるリストを生成：エラトステネスの篩 *)
