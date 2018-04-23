@@ -1,4 +1,5 @@
 structure C  = Char
+structure S  = String
 structure SC = StringCvt
 structure T  = TextIO
 
@@ -13,6 +14,11 @@ val () =
       val i = ref 0
       val j = ref (n - 1)
     in
-      while !i < n do (
-      )
+      while S.sub (s, !i) <> #"A" do (
+        i := !i + 1
+      );
+      while S.sub (s, !j) <> #"Z" do (
+        j := !j - 1
+      );
+      print (Int.toString (!j - !i + 1) ^ "\n")
     end
