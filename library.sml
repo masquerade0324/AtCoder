@@ -13,21 +13,26 @@ fun mkPrimes n =
     end
 
 local
-  fun merge ([], ys) = ys
-    | merge (xs, []) = xs
-    | merge (x::xs, y::ys) = if x >= y then x::merge (xs, y::ys)
-                             else y::merge (x::xs, ys)
-  fun split ([], xs, ys)      = (xs, ys)
-    | split ([x], xs, ys)     = (x::xs, ys)
-    | split (x::y::l, xs, ys) = split (l, x::xs, y::ys)
+  fun merge _ ([], ys)             = ys
+    | merge _ (xs, [])             = xs
+    | merge (op <=) (x::xs, y::ys) =
+      if x <= y then x::merge (op <=) (xs, y::ys)
+      else y::merge (op <=) (x::xs, ys)
+  fun sort _ (0, xs)       = ([], xs)
+    | sort _ (1, x::xs)    = ([x], xs)
+    | sort (op <=) (n, xs) =
+      let
+        val (l1, xs1) = sort (op <=) ((n + 1) div 2, xs)
+        val (l2, xs2) = sort (op <=) (n div 2, xs1)
+      in
+        (merge (op <=) (l1, l2), xs2)
+      end
 in
 (* マージソート *)
-fun msort []  = []
-  | msort [x] = [x]
-  | msort xs  =
+fun msort (op <=) xs =
     let
-      val (left, right) = split (xs, [], [])
+      val (l, _) = sort (op <=) (length xs, xs)
     in
-      merge (msort left, msort right)
-  end
+      l
+    end
 end
