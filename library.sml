@@ -36,3 +36,32 @@ fun msort (op <=) xs =
       l
     end
 end
+
+local
+  datatype 'a heap = E
+                   | T of int * 'a * 'a heap * 'a heap
+  fun rank E                = 0
+    | rank (T (n, _, _, _)) = n
+  fun makeT (x, l, r) = if rank l >= rank r then T (rank r + 1, x, l, r)
+                        else T (rank l + 1, x, r, l)
+  fun merge _ (h, E) = h
+    | merge _ (E, h) = h
+    | merge leq (h1 as T (_, x, l1, r1), h2 as T (_, y, l2, r2)) = 
+      if leq (x, y) then makeT (x, l1, merge leq (r1, h2))
+      else makeT (y, l2, merge leq (h1, r2))
+  fun fromList leq xs = 
+      let
+        fun mergePairs []           = []
+          | mergePairs [h]          = [h]
+          | mergePairs (h1::h2::hs) = merge leq (h1, h2)::mergePairs hs
+        fun loop []  = E
+          | loop [h] = h
+          | loop hs  = loop (mergePairs hs)
+      in
+        loop (map (fn x => T (1, x, E, E)) xs)
+      end
+  fun toList _ E                  = []
+    | toList leq (T (_, x, l, r)) = x::toList leq (merge leq (l, r))
+in
+fun hsort leq xs = toList leq (fromList leq xs)
+end
